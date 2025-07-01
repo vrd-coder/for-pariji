@@ -101,6 +101,20 @@
       from { opacity: 0; transform: scale(0.95); }
       to { opacity: 1; transform: scale(1); }
     }
+
+    .play-btn {
+      margin: 15px auto 0;
+      display: inline-block;
+      background: #ff4081;
+      color: white;
+      font-weight: bold;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 25px;
+      font-size: 1em;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(255, 64, 129, 0.3);
+    }
   </style>
 </head>
 <body>
@@ -115,10 +129,7 @@
     </div>
   </div>
 
-  <!-- Background Music -->
   <audio id="bgMusic" src="terevaaste.mp3" preload="auto"></audio>
-
-  <!-- Confetti CDN -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 
   <script>
@@ -138,12 +149,15 @@
     function sayYes() {
       const music = document.getElementById("bgMusic");
 
-      // Try to play music
       music.play().catch(() => {
-        console.log("Music play failed.");
+        // Music autoplay blocked - show tap to play
+        document.querySelector('.container').innerHTML += `
+          <button class="play-btn" onclick="document.getElementById('bgMusic').play().then(() => this.remove())">
+            🔊 Tap to play music
+          </button>
+        `;
       });
 
-      // Confetti
       confetti({
         particleCount: 200,
         spread: 100,
@@ -156,6 +170,9 @@
           <img class="gif" src="anime-hug.gif" alt="hug gif" />
           <p>Srishti, you're now officially my forever best friend 🫶🏻</p>
           <p>No matter what happens, you’ll always have me — hype squad, safe space, secret keeper 💌</p>
+          <button class="play-btn" onclick="document.getElementById('bgMusic').play().then(() => this.remove())">
+            🔊 Tap to play music
+          </button>
           <button onclick="window.open('https://www.instagram.com/vrd.cfg?igsh=MWI0dm0xcDI4ZzVueA==', '_blank')" style="margin-top: 20px; background: #e1306c; padding: 12px 20px; border: none; color: white; border-radius: 30px; font-weight: bold;">
             Take me to Instagram 💗
           </button>
@@ -163,7 +180,6 @@
       `;
     }
 
-    // FLOATING EMOJIS
     const emojis = ["🥹", "🫶🏻", "💓", "💗", "🌷", "🌸"];
     function spawnEmoji() {
       const emoji = document.createElement("div");
@@ -175,29 +191,6 @@
       setTimeout(() => emoji.remove(), 6000);
     }
     setInterval(spawnEmoji, 500);
-
-    // TAP TO PLAY FALLBACK
-    window.addEventListener("load", () => {
-      const music = document.getElementById("bgMusic");
-      music.play().catch(() => {
-        const btn = document.createElement("button");
-        btn.textContent = "🔊 Tap to play music";
-        btn.style.position = "fixed";
-        btn.style.bottom = "20px";
-        btn.style.left = "50%";
-        btn.style.transform = "translateX(-50%)";
-        btn.style.zIndex = "999";
-        btn.style.padding = "12px 20px";
-        btn.style.border = "none";
-        btn.style.background = "#ff4081";
-        btn.style.color = "white";
-        btn.style.borderRadius = "25px";
-        btn.onclick = () => {
-          music.play().then(() => btn.remove());
-        };
-        document.body.appendChild(btn);
-      });
-    });
   </script>
 </body>
 </html>
