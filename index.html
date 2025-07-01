@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -23,6 +24,21 @@
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
+
+    .emoji {
+      position: absolute;
+      font-size: 24px;
+      animation: floatUp 6s linear infinite;
+      pointer-events: none;
+      opacity: 0.8;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(100vh) scale(1); opacity: 0; }
+      20% { opacity: 1; }
+      100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+    }
+
     .container {
       background: white;
       padding: 30px;
@@ -41,19 +57,13 @@
     .gif {
       width: 100%;
       border-radius: 15px;
-      margin: 15px 0 5px;
-    }
-    .caption {
-      font-size: 0.95em;
-      color: #888;
-      margin-bottom: 15px;
+      margin: 15px 0;
     }
     #textArea {
       font-size: 1.1em;
       color: #555;
-      min-height: 4em;
+      min-height: 3em;
       margin-bottom: 20px;
-      white-space: pre-wrap;
     }
     .buttons {
       display: flex;
@@ -91,31 +101,27 @@
       from { opacity: 0; transform: scale(0.95); }
       to { opacity: 1; transform: scale(1); }
     }
-    .emoji {
-      position: absolute;
-      font-size: 1.5rem;
-      animation: floatUp 5s linear infinite;
-      opacity: 0.7;
-    }
-    @keyframes floatUp {
-      0% { transform: translateY(100vh); }
-      100% { transform: translateY(-100vh); }
-    }
   </style>
 </head>
 <body>
-  <div class="container fade-in" id="mainBox">
+
+  <div class="container" id="mainBox">
     <h1>For You, Srishti 💘</h1>
     <img class="gif" src="sakuta-mai.gif" alt="confession gif" />
-    <div class="caption">Your vibe is unmatched ✨</div>
-    <div id="textArea"></div>
+    <div id="textArea">Hey Srishti... I’ve been meaning to tell you something 💭</div>
     <div class="buttons">
       <button id="yesBtn" onclick="sayYes()">Of courseee 🤝</button>
       <button id="noBtn" onclick="moveNo()">No 🥺</button>
     </div>
-  </div><audio id="bgMusic" src="terevaaste.mp3" preload="auto"></audio>
+  </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>  <script>
+  <!-- Background Music -->
+  <audio id="bgMusic" src="terevaaste.mp3" preload="auto"></audio>
+
+  <!-- Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
+  <script>
     const noBtn = document.getElementById("noBtn");
 
     function moveNo() {
@@ -131,27 +137,18 @@
 
     function sayYes() {
       const music = document.getElementById("bgMusic");
+
+      // Try to play music
       music.play().catch(() => {
-        const btn = document.createElement("button");
-        btn.textContent = "🔊 Tap to play music";
-        btn.style.position = "fixed";
-        btn.style.bottom = "20px";
-        btn.style.left = "50%";
-        btn.style.transform = "translateX(-50%)";
-        btn.style.zIndex = "999";
-        btn.style.padding = "12px 20px";
-        btn.style.border = "none";
-        btn.style.background = "#ff4081";
-        btn.style.color = "white";
-        btn.style.borderRadius = "25px";
-        btn.onclick = () => {
-          music.play();
-          btn.remove();
-        };
-        document.body.appendChild(btn);
+        console.log("Music play failed.");
       });
 
-      confetti({ particleCount: 300, spread: 120, origin: { y: 0.6 } });
+      // Confetti
+      confetti({
+        particleCount: 200,
+        spread: 100,
+        origin: { y: 0.6 }
+      });
 
       document.body.innerHTML = `
         <div class="container fade-in" style="background:#fce4ec;">
@@ -166,46 +163,41 @@
       `;
     }
 
-    const lines = [
-      "Hey Srishti...",
-      "I’ve been meaning to tell you something 💭",
-      "You’re special to me in a way words struggle to express...",
-      "You’ve made my days brighter, my thoughts lighter...",
-      "So will you be my forever best friend? 🥹🫶🏻💓"
-    ];
-
-    let i = 0;
-    function typeLines() {
-      const textArea = document.getElementById("textArea");
-      if (i < lines.length) {
-        const p = document.createElement("p");
-        textArea.appendChild(p);
-        let j = 0;
-        function typeChar() {
-          if (j < lines[i].length) {
-            p.textContent += lines[i].charAt(j);
-            j++;
-            setTimeout(typeChar, 40);
-          } else {
-            i++;
-            setTimeout(typeLines, 500);
-          }
-        }
-        typeChar();
-      }
-    }
-    typeLines();
-
-    // floating emojis
+    // FLOATING EMOJIS
     const emojis = ["🥹", "🫶🏻", "💓", "💗", "🌷", "🌸"];
-    for (let i = 0; i < 30; i++) {
+    function spawnEmoji() {
       const emoji = document.createElement("div");
       emoji.className = "emoji";
       emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
       emoji.style.left = Math.random() * 100 + "vw";
-      emoji.style.animationDuration = (5 + Math.random() * 5) + "s";
-      emoji.style.fontSize = (1 + Math.random() * 1.5) + "rem";
+      emoji.style.fontSize = (20 + Math.random() * 15) + "px";
       document.body.appendChild(emoji);
+      setTimeout(() => emoji.remove(), 6000);
     }
-  </script></body>
+    setInterval(spawnEmoji, 500);
+
+    // TAP TO PLAY FALLBACK
+    window.addEventListener("load", () => {
+      const music = document.getElementById("bgMusic");
+      music.play().catch(() => {
+        const btn = document.createElement("button");
+        btn.textContent = "🔊 Tap to play music";
+        btn.style.position = "fixed";
+        btn.style.bottom = "20px";
+        btn.style.left = "50%";
+        btn.style.transform = "translateX(-50%)";
+        btn.style.zIndex = "999";
+        btn.style.padding = "12px 20px";
+        btn.style.border = "none";
+        btn.style.background = "#ff4081";
+        btn.style.color = "white";
+        btn.style.borderRadius = "25px";
+        btn.onclick = () => {
+          music.play().then(() => btn.remove());
+        };
+        document.body.appendChild(btn);
+      });
+    });
+  </script>
+</body>
 </html>
