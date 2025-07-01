@@ -19,11 +19,13 @@
       align-items: center;
       position: relative;
     }
+
     @keyframes gradient {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
+
     .container {
       background: white;
       padding: 30px;
@@ -33,35 +35,35 @@
       width: 90%;
       max-width: 400px;
       position: relative;
-      z-index: 2;
     }
+
     h1 {
       font-size: 1.9em;
       color: #d63384;
       margin-bottom: 10px;
     }
+
     .gif {
       width: 100%;
       border-radius: 15px;
-      margin: 15px 0 5px 0;
+      margin: 15px 0;
     }
-    .caption {
-      font-size: 0.9em;
-      color: #999;
-      margin-bottom: 15px;
-    }
+
     #textArea {
       font-size: 1.1em;
       color: #555;
-      min-height: 3em;
+      min-height: 5em;
       margin-bottom: 20px;
+      white-space: pre-wrap;
     }
+
     .buttons {
       display: flex;
       justify-content: center;
       gap: 15px;
       margin-top: 10px;
     }
+
     button {
       padding: 10px 20px;
       border: none;
@@ -72,59 +74,83 @@
       transition: 0.3s ease;
       color: white;
     }
+
     #yesBtn {
       background: #ff69b4;
     }
+
     #yesBtn:hover {
       background: #f54d9b;
     }
+
     #noBtn {
       background: #90caf9;
       position: relative;
     }
+
     #noBtn:hover {
       background: #64b5f6;
     }
+
     .fade-in {
       animation: fadeIn 1s ease forwards;
     }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: scale(0.95); }
       to { opacity: 1; transform: scale(1); }
     }
+
+    .emoji-container {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
     .emoji {
       position: absolute;
-      font-size: 22px;
-      animation: floatUp 4s linear forwards;
+      font-size: 24px;
+      animation: floatUp 5s linear infinite;
       opacity: 0.8;
-      z-index: 1;
     }
+
     @keyframes floatUp {
-      0% { transform: translateY(0); opacity: 0; }
-      30% { opacity: 1; }
-      100% { transform: translateY(-100vh); opacity: 0; }
+      0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-20vh) rotate(360deg);
+        opacity: 0;
+      }
     }
   </style>
 </head>
 <body>
+  <!-- Floating Emojis -->
+  <div class="emoji-container" id="emojis"></div>
+
   <div class="container" id="mainBox">
     <h1>For You, Srishti 💘</h1>
     <img class="gif" src="sakuta-mai.gif" alt="confession gif" />
-    <div class="caption">"Someone who made my days brighter 💫"</div>
-    <div id="textArea">Hey Srishti... I’ve been meaning to tell you something 💭</div>
+    <div id="textArea">Typing...</div>
     <div class="buttons">
       <button id="yesBtn" onclick="sayYes()">Of courseee 🤝</button>
       <button id="noBtn" onclick="moveNo()">No 🥺</button>
     </div>
   </div>
 
+  <!-- Background Music -->
   <audio id="bgMusic" src="terevaaste.mp3" preload="auto"></audio>
+
+  <!-- Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 
   <script>
     const noBtn = document.getElementById("noBtn");
-    const textArea = document.getElementById("textArea");
-    const music = document.getElementById("bgMusic");
 
     function moveNo() {
       const container = document.querySelector('.container');
@@ -138,6 +164,9 @@
     }
 
     function sayYes() {
+      const music = document.getElementById("bgMusic");
+
+      // Try to play music
       music.play().catch(() => {
         const btn = document.createElement("button");
         btn.textContent = "🔊 Tap to play music";
@@ -158,12 +187,10 @@
         document.body.appendChild(btn);
       });
 
-      confetti({
-        particleCount: 250,
-        spread: 80,
-        origin: { y: 0.6 }
-      });
+      // Confetti
+      confetti({ particleCount: 180, spread: 100, origin: { y: 0.6 } });
 
+      // Replace screen
       document.body.innerHTML = `
         <div class="container fade-in" style="background:#fce4ec;">
           <h1>Yesssss 💖</h1>
@@ -177,47 +204,51 @@
       `;
     }
 
-    function createFloatingEmojis() {
-      const emojis = ["💖", "🫶🏻", "🌸", "✨", "💌"];
-      const emoji = document.createElement('div');
-      emoji.className = 'emoji';
-      emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-      emoji.style.left = Math.random() * 100 + 'vw';
-      emoji.style.animationDuration = (3 + Math.random() * 2) + 's';
-      emoji.style.top = '100vh';
-      document.body.appendChild(emoji);
-      setTimeout(() => emoji.remove(), 5000);
-    }
-
-    setInterval(createFloatingEmojis, 400);
-
-    const introLines = [
-      "Hey Srishti... I’ve been meaning to tell you something 💭",
-      "You’re genuinely one of the most special people in my life 🫶🏻",
-      "Will you be my forever best friend? 💌"
-    ];
-    let lineIndex = 0;
-    let charIndex = 0;
-
-    function typeText() {
-      if (lineIndex >= introLines.length) return;
-      if (charIndex < introLines[lineIndex].length) {
-        textArea.textContent += introLines[lineIndex].charAt(charIndex);
-        charIndex++;
-        setTimeout(typeText, 50);
-      } else {
-        lineIndex++;
-        charIndex = 0;
-        setTimeout(() => {
-          textArea.textContent = "";
-          typeText();
-        }, 1200);
-      }
-    }
-
+    // Typing effect for all lines at once
     window.onload = () => {
-      textArea.textContent = "";
-      typeText();
+      const textArea = document.getElementById("textArea");
+      const lines = [
+        "Hey Srishti 🥹",
+        "I’ve met a lot of people... but your vibe? It's just different ✨",
+        "Pure, chaotic, kind — you're all of it 💓",
+        "And I don’t wanna imagine my days without you 🌷",
+        "So... will you be my bestest friend for life? 💗🫶🏻"
+      ];
+      let index = 0;
+      function typeLines() {
+        if (index >= lines.length) return;
+        let i = 0;
+        const currentLine = lines[index];
+        const tempLine = document.createElement("p");
+        textArea.appendChild(tempLine);
+
+        function typeChar() {
+          if (i < currentLine.length) {
+            tempLine.textContent += currentLine.charAt(i);
+            i++;
+            setTimeout(typeChar, 35);
+          } else {
+            index++;
+            setTimeout(typeLines, 300);
+          }
+        }
+        typeChar();
+      }
+      typeLines();
+
+      // Generate floating emojis
+      const emojiList = ["🥹", "🫶🏻", "💓", "💗", "🌷", "🌸"];
+      const container = document.getElementById("emojis");
+
+      for (let i = 0; i < 40; i++) {
+        const emoji = document.createElement("div");
+        emoji.className = "emoji";
+        emoji.innerText = emojiList[Math.floor(Math.random() * emojiList.length)];
+        emoji.style.left = Math.random() * 100 + "vw";
+        emoji.style.animationDuration = 3 + Math.random() * 4 + "s";
+        emoji.style.fontSize = 20 + Math.random() * 16 + "px";
+        container.appendChild(emoji);
+      }
     };
   </script>
 </body>
