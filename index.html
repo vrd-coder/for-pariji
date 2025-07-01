@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>For You, Srishti 💘</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -18,7 +18,10 @@
       justify-content: center;
       align-items: center;
       position: relative;
+      padding: 20px;
+      flex-direction: column;
     }
+
     @keyframes gradient {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
@@ -45,32 +48,38 @@
       border-radius: 25px;
       box-shadow: 0 8px 20px rgba(255, 105, 180, 0.3);
       text-align: center;
-      width: 90%;
+      width: 100%;
       max-width: 400px;
       position: relative;
     }
+
     h1 {
       font-size: 1.9em;
       color: #d63384;
       margin-bottom: 10px;
     }
+
     .gif {
       width: 100%;
       border-radius: 15px;
       margin: 15px 0;
     }
-    #textArea {
+
+    .type-line {
       font-size: 1.1em;
       color: #555;
-      min-height: 3em;
-      margin-bottom: 20px;
+      min-height: 1.5em;
+      margin-bottom: 10px;
+      white-space: pre-wrap;
     }
+
     .buttons {
       display: flex;
       justify-content: center;
       gap: 15px;
-      margin-top: 10px;
+      margin-top: 20px;
     }
+
     button {
       padding: 10px 20px;
       border: none;
@@ -81,6 +90,7 @@
       transition: 0.3s ease;
       color: white;
     }
+
     #yesBtn {
       background: #ff69b4;
     }
@@ -94,26 +104,14 @@
     #noBtn:hover {
       background: #64b5f6;
     }
+
     .fade-in {
       animation: fadeIn 1s ease forwards;
     }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: scale(0.95); }
       to { opacity: 1; transform: scale(1); }
-    }
-
-    .play-btn {
-      margin: 15px auto 0;
-      display: inline-block;
-      background: #ff4081;
-      color: white;
-      font-weight: bold;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 25px;
-      font-size: 1em;
-      cursor: pointer;
-      box-shadow: 0 4px 10px rgba(255, 64, 129, 0.3);
     }
   </style>
 </head>
@@ -122,14 +120,14 @@
   <div class="container" id="mainBox">
     <h1>For You, Srishti 💘</h1>
     <img class="gif" src="sakuta-mai.gif" alt="confession gif" />
-    <div id="textArea">Hey Srishti... I’ve been meaning to tell you something 💭</div>
+    <div id="textLines"></div>
     <div class="buttons">
       <button id="yesBtn" onclick="sayYes()">Of courseee 🤝</button>
       <button id="noBtn" onclick="moveNo()">No 🥺</button>
     </div>
   </div>
 
-  <audio id="bgMusic" src="terevaaste.mp3" preload="auto"></audio>
+  <!-- Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 
   <script>
@@ -147,39 +145,35 @@
     }
 
     function sayYes() {
-      const music = document.getElementById("bgMusic");
-
-      music.play().catch(() => {
-        // Music autoplay blocked - show tap to play
-        document.querySelector('.container').innerHTML += `
-          <button class="play-btn" onclick="document.getElementById('bgMusic').play().then(() => this.remove())">
-            🔊 Tap to play music
-          </button>
-        `;
-      });
-
-      confetti({
-        particleCount: 200,
-        spread: 100,
-        origin: { y: 0.6 }
-      });
-
       document.body.innerHTML = `
         <div class="container fade-in" style="background:#fce4ec;">
           <h1>Yesssss 💖</h1>
           <img class="gif" src="anime-hug.gif" alt="hug gif" />
           <p>Srishti, you're now officially my forever best friend 🫶🏻</p>
           <p>No matter what happens, you’ll always have me — hype squad, safe space, secret keeper 💌</p>
-          <button class="play-btn" onclick="document.getElementById('bgMusic').play().then(() => this.remove())">
-            🔊 Tap to play music
-          </button>
           <button onclick="window.open('https://www.instagram.com/vrd.cfg?igsh=MWI0dm0xcDI4ZzVueA==', '_blank')" style="margin-top: 20px; background: #e1306c; padding: 12px 20px; border: none; color: white; border-radius: 30px; font-weight: bold;">
             Take me to Instagram 💗
           </button>
+          <button id="playBtn" style="margin-top: 15px; background: #ff4081; padding: 10px 20px; border: none; color: white; border-radius: 25px; font-weight: bold;">🔊 Tap to play music</button>
         </div>
+        <audio id="bgMusic" src="terevaaste.mp3" loop></audio>
       `;
+
+      confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
+      setInterval(spawnEmoji, 500);
+
+      const playBtn = document.getElementById("playBtn");
+      const music = document.getElementById("bgMusic");
+      playBtn.onclick = () => {
+        music.play().then(() => {
+          playBtn.remove();
+        }).catch(() => {
+          alert("Couldn’t play audio. Try again.");
+        });
+      };
     }
 
+    // Floating emojis
     const emojis = ["🥹", "🫶🏻", "💓", "💗", "🌷", "🌸"];
     function spawnEmoji() {
       const emoji = document.createElement("div");
@@ -191,6 +185,38 @@
       setTimeout(() => emoji.remove(), 6000);
     }
     setInterval(spawnEmoji, 500);
+
+    // Typewriter effect for multiple lines
+    const lines = [
+      "Hey Srishti 👀",
+      "I’ve met a lot of people... but your vibe? It's just different 💫",
+      "You’ve unknowingly become the most special part of my life 🥺",
+      "So... will you be my bestest friend for life? 🫶🏻😌"
+    ];
+
+    let currentLine = 0;
+
+    function typeNextLine() {
+      if (currentLine >= lines.length) return;
+      const lineDiv = document.createElement("div");
+      lineDiv.className = "type-line";
+      document.getElementById("textLines").appendChild(lineDiv);
+
+      let i = 0;
+      function typeChar() {
+        if (i < lines[currentLine].length) {
+          lineDiv.textContent += lines[currentLine].charAt(i);
+          i++;
+          setTimeout(typeChar, 40);
+        } else {
+          currentLine++;
+          setTimeout(typeNextLine, 400);
+        }
+      }
+      typeChar();
+    }
+
+    window.onload = typeNextLine;
   </script>
 </body>
 </html>
